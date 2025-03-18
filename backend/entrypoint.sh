@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Wait for Redis
-while ! nc -z redis 6379; do
+until nc -z redis 6379; do
   echo "Waiting for Redis..."
   sleep 1
 done
