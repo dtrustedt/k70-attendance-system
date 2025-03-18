@@ -1,9 +1,24 @@
-# Updated requirements.txt
+# requirements.txt
+
+# Core Flask
 flask==2.0.3
+werkzeug==2.0.3
+
+# ASGI Server
 gunicorn==20.1.0
+
+# Celery
 celery==5.2.7
 redis==4.3.4
-zk==0.9.2  # Correct package name
-python-dotenv==0.19.2
+
+# Security
 cryptography==36.0.1
+
+# QR Generation
 qrcode[pil]==7.3.1
+
+# Environment
+python-dotenv==0.19.2
+
+# Thrift (pinned to avoid conflicts)
+thriftpy2==0.5.2

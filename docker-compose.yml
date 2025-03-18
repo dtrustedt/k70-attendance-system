@@ -3,22 +3,35 @@ version: '3.8'
 services:
   web:
     build: ./backend
-    command: bash entrypoint.sh
+    command: /app/src/entrypoint.sh
     volumes:
-      - ./backend/src:/app
+      - ./backend/src:/app/src
     ports:
       - "5000:5000"
     env_file:
       - .env
     depends_on:
-      - redis
+      redis:
+        condition: service_healthy
+    networks:
+      - attendance-net
+    restart: unless-stopped
 
   redis:
     image: redis:6.2-alpine
     volumes:
-      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
       - redis_data:/data
-    command: redis-server /usr/local/etc/redis/redis.conf
+    command: redis-server --requirepass $$REDIS_PASSWORD
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    env_file:
+      - .env
+    networks:
+      - attendance-net
+    restart: unless-stopped
 
   celery:
     build: ./backend
@@ -28,7 +41,14 @@ services:
     depends_on:
       - redis
     volumes:
-      - ./backend/src:/app
+      - ./backend/src:/app/src
+    networks:
+      - attendance-net
+    restart: unless-stopped
 
 volumes:
   redis_data:
+
+networks:
+  attendance-net:
+    driver: bridge

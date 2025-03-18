@@ -1,18 +1,29 @@
-FROM python:3.11-slim-bullseye
-
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    libpq-dev \
-    && rm -rf /var/lib/apt/lists/*
-RUN python -m pip install --upgrade pip
+# Dockerfile
+FROM python:3.9-slim-buster
 
 WORKDIR /app
 
+RUN apt-get update && apt-get install -y \
+    gcc \
+    python3-dev \
+    libssl-dev \
+    libffi-dev \
+    libjpeg-dev \
+    zlib1g-dev \
+    git \
+    netcat \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . .
+RUN pip install --no-cache-dir --upgrade pip==23.0.1 && \
+    pip install --no-cache-dir pillow==9.0.1 && \
+    pip install --no-cache-dir -r requirements.txt && \
+    pip install --no-cache-dir git+https://github.com/fananimi/pyzk.git
 
-RUN chmod +x entrypoint.sh
+COPY ./src /app/src
 
-EXPOSE 5000
+ENV PYTHONPATH=/app/src
+
+ENTRYPOINT ["/app/src/entrypoint.sh"]
+

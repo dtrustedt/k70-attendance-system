@@ -1,4 +1,4 @@
-from pyzk import ZK
+from zk import ZK
 from celery import shared_task
 
 class DeviceManager:
